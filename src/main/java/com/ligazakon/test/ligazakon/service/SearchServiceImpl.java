@@ -4,53 +4,23 @@ import com.ligazakon.test.ligazakon.dto.SearchResult;
 import com.ligazakon.test.ligazakon.repository.CompanyPatternRepository;
 import opennlp.tools.dictionary.Dictionary;
 import opennlp.tools.namefind.DictionaryNameFinder;
-import opennlp.tools.namefind.DocumentNameFinder;
-import opennlp.tools.namefind.NameFinderME;
-import opennlp.tools.namefind.NameSample;
-import opennlp.tools.namefind.NameSampleDataStream;
-import opennlp.tools.namefind.TokenNameFinderFactory;
-import opennlp.tools.namefind.TokenNameFinderModel;
-import opennlp.tools.postag.POSModel;
-import opennlp.tools.postag.POSSample;
-import opennlp.tools.postag.POSTaggerFactory;
-import opennlp.tools.postag.POSTaggerME;
-import opennlp.tools.postag.WordTagSampleStream;
 import opennlp.tools.sentdetect.SentenceDetector;
-import opennlp.tools.tokenize.Detokenizer;
-import opennlp.tools.tokenize.SimpleTokenizer;
 import opennlp.tools.tokenize.WhitespaceTokenizer;
-import opennlp.tools.util.InputStreamFactory;
-import opennlp.tools.util.MarkableFileInputStreamFactory;
-import opennlp.tools.util.ObjectStream;
-import opennlp.tools.util.PlainTextByLineStream;
 import opennlp.tools.util.StringList;
-import opennlp.tools.util.TrainingParameters;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.webjars.NotFoundException;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.util.regex.Pattern.MULTILINE;
 
@@ -58,15 +28,11 @@ import static java.util.regex.Pattern.MULTILINE;
 public class SearchServiceImpl implements SearchService {
 
     private CompanyPatternRepository repository;
-    private ThreadPoolTaskExecutor executor;
-
     private SentenceDetector sentenceDetector;
 
     @Autowired
-    public SearchServiceImpl(CompanyPatternRepository repository, @Qualifier("taskExecutor") ThreadPoolTaskExecutor executor,
-                             SentenceDetector sentenceDetector) {
+    public SearchServiceImpl(CompanyPatternRepository repository, SentenceDetector sentenceDetector) {
         this.repository = repository;
-        this.executor = executor;
         this.sentenceDetector = sentenceDetector;
     }
 
@@ -92,6 +58,7 @@ public class SearchServiceImpl implements SearchService {
                 }
         );
         checkResult(result);
+        finder.clearAdaptiveData();
         return result;
     }
 
